@@ -1,35 +1,31 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"time"
+	"math"
+	"os"
+	"strconv"
+	"strings"
 )
 
-func max(values ...int) int {
-	var mx int
-	for _, v := range values {
-		if v > mx {
-			mx = v
-		}
-	}
-	return mx
+var (
+	sc = bufio.NewScanner(os.Stdin)
+)
+
+func init() {
+	sc.Buffer([]byte{}, math.MaxInt64)
 }
 
 func main() {
 	// input
 	var n int
 	fmt.Scanf("%d", &n)
-	as := make([]int, n+1)
-	bs := make([]int, n+1)
-	for i := 1; i <= n-1; i++ {
-		fmt.Scan(&as[i])
-	}
-	for i := 1; i <= n-1; i++ {
-		fmt.Scan(&bs[i])
-	}
+
+	as := scanLineInt(sc, n, 1)
+	bs := scanLineInt(sc, n, 1)
 
 	// main
-	t1 := time.Now()
 	dp := make([]int, n+1)
 	for i := 1; i <= n; i++ {
 		if i != 1 && dp[i] == 0 {
@@ -45,6 +41,23 @@ func main() {
 		dp[b] = max(dp[b], dp[i]+150)
 	}
 	fmt.Println(dp[n])
-	t2 := time.Now()
-	fmt.Println(t2.Sub(t1))
+}
+
+func max(values ...int) int {
+	var mx int
+	for _, v := range values {
+		if v > mx {
+			mx = v
+		}
+	}
+	return mx
+}
+
+func scanLineInt(sc *bufio.Scanner, size, offset int) []int {
+	items := make([]int, size+offset)
+	sc.Scan()
+	for i, s := range strings.Split(sc.Text(), " ") {
+		items[i+offset], _ = strconv.Atoi(s)
+	}
+	return items
 }
