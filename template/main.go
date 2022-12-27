@@ -53,14 +53,16 @@ func min(values ...int) int {
 	return mn
 }
 
-func bs(l, r int, fn func(int) bool) int {
+func bs(l, r int, fn func(int) int) int {
 	// fn must be the one that returns true only when the result is greater than the given value.
 	for l < r {
 		mid := (l + r) / 2
-		if fn(mid) {
+		if ret := fn(mid); ret > 0 {
 			l = mid + 1
-		} else {
+		} else if ret < 0 {
 			r = mid
+		} else {
+			return mid
 		}
 	}
 	return l
