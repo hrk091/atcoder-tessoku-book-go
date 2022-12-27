@@ -22,30 +22,44 @@ func main() {
 	var n int
 	fmt.Scanf("%d", &n)
 	as := scanLineInt(sc, n, 1)
-	dp := map[int]int{}
+	dp := make([]int, n+1)
+	var LEN int
 	for i := 1; i <= n; i++ {
-		var maxV int
-		for k, v := range dp {
-			if as[k] < as[i] {
-				if maxV < v {
-					maxV = v
+		if as[i] <= dp[1] {
+			dp[1] = as[i]
+		} else if as[i] > dp[LEN] {
+			LEN++
+			dp[LEN] = as[i]
+		} else {
+			j := bs(1, LEN, func(pos int) int {
+				if dp[pos+1] < as[i] {
+					return 1
 				}
-			}
+				if as[i] <= dp[pos] {
+					return -1
+				}
+				return 0
+			})
+			dp[j+1] = as[i]
 		}
-		dp[i] = maxV + 1
-		//fmt.Println("---")
-		//for k, v := range dp {
-		//	fmt.Printf("k=%d, a=%d, len=%d\n", k, as[k], v)
-		//}
 	}
 
-	var max int
-	for _, v := range dp {
-		if v > max {
-			max = v
+	fmt.Println(LEN)
+}
+
+func bs(l, r int, fn func(int) int) int {
+	// fn must be the one that returns true only when the result is greater than the given value.
+	for l < r {
+		mid := (l + r) / 2
+		if ret := fn(mid); ret > 0 {
+			l = mid + 1
+		} else if ret < 0 {
+			r = mid
+		} else {
+			return mid
 		}
 	}
-	fmt.Println(max)
+	return l
 }
 
 func fillSlice(s []int, v int) {
