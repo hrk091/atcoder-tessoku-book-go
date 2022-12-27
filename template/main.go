@@ -15,7 +15,6 @@ var (
 
 func init() {
 	sc.Buffer([]byte{}, math.MaxInt64)
-	sc.Split(bufio.ScanWords)
 }
 
 func main() {
@@ -45,7 +44,7 @@ func max(values ...int) int {
 }
 
 func min(values ...int) int {
-	var mn int
+	mn := math.MaxInt
 	for _, v := range values {
 		if v < mn {
 			mn = v
@@ -67,11 +66,18 @@ func bs(l, r int, fn func(int) bool) int {
 	return l
 }
 
-func atoi(s string) int {
-	i, e := strconv.Atoi(s)
-	if e != nil {
-		panic(e)
+func scanLineInt(sc *bufio.Scanner, size, offset int) []int {
+	items := make([]int, size+offset)
+	sc.Scan()
+	for i, s := range strings.Split(sc.Text(), " ") {
+		items[i+offset] = atoi(s)
 	}
+	return items
+}
+
+func atoi(s string) int {
+	i, err := strconv.Atoi(s)
+	mustNil(err)
 	return i
 }
 
@@ -79,11 +85,8 @@ func itoa(i int) string {
 	return strconv.Itoa(i)
 }
 
-func scanLineInt(sc *bufio.Scanner, size, offset int) []int {
-	items := make([]int, size+offset)
-	sc.Scan()
-	for i, s := range strings.Split(sc.Text(), " ") {
-		items[i+offset], _ = strconv.Atoi(s)
+func mustNil(err error) {
+	if err != nil {
+		panic(err)
 	}
-	return items
 }
