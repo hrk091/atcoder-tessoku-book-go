@@ -44,7 +44,7 @@ func max(values ...int) int {
 }
 
 func min(values ...int) int {
-	mn := math.MaxInt
+	mn := math.MaxInt64
 	for _, v := range values {
 		if v < mn {
 			mn = v
@@ -73,6 +73,20 @@ func scanLineInt(sc *bufio.Scanner, size, offset int) []int {
 		items[i+offset] = atoi(s)
 	}
 	return items
+}
+
+func fillSlice(s []int, v int) {
+	s[0] = v
+	for p := 1; p < len(s); p *= 2 {
+		copy(s[p:], s[:p])
+	}
+}
+
+func fillMatrix(s [][]int, v int) {
+	fillSlice(s[0], v)
+	for p := 1; p < len(s); p++ {
+		copy(s[p], s[0])
+	}
 }
 
 func atoi(s string) int {
