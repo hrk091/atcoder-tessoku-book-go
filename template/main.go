@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"math"
 	"os"
@@ -9,12 +10,18 @@ import (
 )
 
 var (
-	sc = bufio.NewScanner(os.Stdin)
+	sc    = bufio.NewScanner(os.Stdin)
+	debug int
 )
 
 func init() {
 	sc.Buffer([]byte{}, math.MaxInt64)
 	sc.Split(bufio.ScanWords)
+	flag.Parse()
+	d := flag.Arg(0)
+	if d != "" {
+		debug = atoi(d)
+	}
 }
 
 func main() {
@@ -26,11 +33,17 @@ func main() {
 	var ok bool
 
 	// output
-	if ok {
-		fmt.Println("Yes")
-	} else {
-		fmt.Println("No")
+	if debug == 0 {
+		if ok {
+			fmt.Println("Yes")
+		} else {
+			fmt.Println("No")
+		}
 	}
+}
+
+func abs(v int) int {
+	return int(math.Abs(float64(v)))
 }
 
 func max(values ...int) int {
