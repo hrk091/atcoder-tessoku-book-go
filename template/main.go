@@ -6,7 +6,6 @@ import (
 	"math"
 	"os"
 	"strconv"
-	"strings"
 )
 
 var (
@@ -15,12 +14,13 @@ var (
 
 func init() {
 	sc.Buffer([]byte{}, math.MaxInt64)
+	sc.Split(bufio.ScanWords)
 }
 
 func main() {
 	// input
-	var a int
-	fmt.Scanf("%d", &a)
+	sc.Scan()
+	n := atoi(sc.Text())
 
 	// main
 	var ok bool
@@ -53,6 +53,14 @@ func min(values ...int) int {
 	return mn
 }
 
+func sum(values ...int) int {
+	var a int
+	for _, v := range values {
+		a += v
+	}
+	return a
+}
+
 func bs(l, r int, fn func(int) int) int {
 	// fn must be the one that returns true only when the result is greater than the given value.
 	for l < r {
@@ -70,9 +78,9 @@ func bs(l, r int, fn func(int) int) int {
 
 func scanLineInt(sc *bufio.Scanner, size, offset int) []int {
 	items := make([]int, size+offset)
-	sc.Scan()
-	for i, s := range strings.Split(sc.Text(), " ") {
-		items[i+offset] = atoi(s)
+	for i := 0; i < size; i++ {
+		sc.Scan()
+		items[i+offset] = atoi(sc.Text())
 	}
 	return items
 }
