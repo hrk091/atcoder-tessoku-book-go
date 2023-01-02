@@ -74,7 +74,7 @@ func sum(values ...int) int {
 	return a
 }
 
-func bs(l, r int, fn func(int) int) int {
+func binarySearch(l, r int, fn func(int) int) int {
 	// fn must be the one that returns true only when the result is greater than the given value.
 	for l < r {
 		mid := (l + r) / 2
