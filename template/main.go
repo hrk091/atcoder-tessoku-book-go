@@ -74,6 +74,20 @@ func sum(values ...int) int {
 	return a
 }
 
+func bitToList(b int, len int) ([]int, int) {
+	// 63, 8 => [1,1,1,1,1,1,0,0]
+	var ret []int
+	count := 0
+	for i := 0; i < len; i++ {
+		v := b >> i & 1
+		if v == 1 {
+			count++
+		}
+		ret = append(ret, v)
+	}
+	return ret, count
+}
+
 func binarySearch(l, r int, fn func(int) int) int {
 	// fn must be the one that returns true only when the result is greater than the given value.
 	for l < r {
@@ -120,6 +134,20 @@ func atoi(s string) int {
 
 func itoa(i int) string {
 	return strconv.Itoa(i)
+}
+
+func btoi(b byte) int {
+	if b < '0' || '9' < b {
+		panic(fmt.Errorf("cannot convert %s to int", []byte{b}))
+	}
+	return atoi(string(b))
+}
+
+func itob(i int) byte {
+	if i < 0 || i > 9 {
+		panic(fmt.Errorf("cannot convert %d to byte", i))
+	}
+	return byte(i + '0')
 }
 
 func mustNil(err error) {
