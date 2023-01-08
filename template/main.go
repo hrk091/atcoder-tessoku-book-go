@@ -126,25 +126,7 @@ func (g *graph) newVisited() []bool {
 	return visited
 }
 
-// dfs conducts DFS and returns whether all nodes are visited or not and visited list.
-func (g *graph) dfs(pos int, visited []bool) (bool, []bool) {
-	if visited == nil {
-		visited = g.newVisited()
-	}
-
-	var dfs func(int)
-	dfs = func(pos int) {
-		visited[pos] = true
-		for _, next := range g.data[pos] {
-			if !visited[next] {
-				dfs(next)
-			}
-		}
-		// if revisit is needed, enable following
-		//visited[pos] = false
-	}
-	dfs(pos)
-
+func (g *graph) isCompleted(visited []bool) bool {
 	completed := true
 	for _, v := range visited {
 		if !v {
@@ -162,21 +144,62 @@ func (g *graph) dfs(pos int, visited []bool) (bool, []bool) {
 		fmt.Printf("visited: %+v\n", visitedP)
 		fmt.Printf("completed: %+v\n", completed)
 	}
-
-	return completed, visited
+	return completed
 }
 
-func (g *graph) wfs(pos int, fn func(curr, next int)) {
+// dfs conducts DFS and returns whether all nodes are visited or not and visited list.
+func (g *graph) dfs(pos int, visited []bool, fn func(curr, next int)) (bool, []bool) {
+	if visited == nil {
+		visited = g.newVisited()
+	}
+
+	var dfs func(int)
+	dfs = func(curr int) {
+		visited[curr] = true
+
+		for _, next := range g.data[curr] {
+			if fn != nil {
+				fn(curr, next)
+			}
+			if !visited[next] {
+				dfs(next)
+			}
+		}
+		// if revisit is needed, enable following
+		//visited[curr] = false
+	}
+	if !visited[pos] {
+		dfs(pos)
+	}
+
+	return g.isCompleted(visited), visited
+}
+
+func (g *graph) wfs(pos int, visited []bool, fn func(curr, next int)) (bool, []bool) {
+	if visited == nil {
+		visited = g.newVisited()
+	}
+
 	q := newQueue()
-	q.push(pos)
+	if !visited[pos] {
+		q.push(pos)
+	}
 
 	for !q.empty() {
 		curr := q.pop()
+		visited[curr] = true
+
 		for _, next := range g.data[curr] {
-			fn(curr, next)
-			q.push(next)
+			if fn != nil {
+				fn(curr, next)
+			}
+			if !visited[next] {
+				q.push(next)
+			}
 		}
 	}
+
+	return g.isCompleted(visited), visited
 }
 
 type queue struct {
