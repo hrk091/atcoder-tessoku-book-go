@@ -166,6 +166,41 @@ func (g *graph) dfs(pos int, visited []bool) (bool, []bool) {
 	return completed, visited
 }
 
+func (g *graph) wfs(pos int, fn func(curr, next int)) {
+	q := newQueue()
+	q.push(pos)
+
+	for !q.empty() {
+		curr := q.pop()
+		for _, next := range g.data[curr] {
+			fn(curr, next)
+			q.push(next)
+		}
+	}
+}
+
+type queue struct {
+	data []int
+}
+
+func newQueue() *queue {
+	return &queue{}
+}
+
+func (q *queue) push(v int) {
+	q.data = append(q.data, v)
+}
+
+func (q *queue) pop() int {
+	v := q.data[0]
+	q.data = q.data[1:]
+	return v
+}
+
+func (q *queue) empty() bool {
+	return len(q.data) == 0
+}
+
 func fillSlice(s []int, v int) {
 	s[0] = v
 	for p := 1; p < len(s); p *= 2 {
