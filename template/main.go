@@ -103,13 +103,67 @@ func binarySearch(l, r int, fn func(int) int) int {
 	return l
 }
 
-func scanLineInt(sc *bufio.Scanner, size, offset int) []int {
-	items := make([]int, size+offset)
-	for i := 0; i < size; i++ {
-		sc.Scan()
-		items[i+offset] = atoi(sc.Text())
+type graph struct {
+	nodeSize int
+	data     map[int][]int
+}
+
+func newGraph(nodeSize int) *graph {
+	data := make(map[int][]int, nodeSize+1)
+	return &graph{
+		nodeSize: nodeSize,
+		data:     data,
 	}
-	return items
+}
+
+func (g *graph) addEdge(a, b int) {
+	g.data[a] = append(g.data[a], b)
+}
+
+func (g *graph) newVisited() []bool {
+	visited := make([]bool, g.nodeSize+1)
+	visited[0] = true
+	return visited
+}
+
+// dfs conducts DFS and returns whether all nodes are visited or not and visited list.
+func (g *graph) dfs(pos int, visited []bool) (bool, []bool) {
+	if visited == nil {
+		visited = g.newVisited()
+	}
+
+	var dfs func(int)
+	dfs = func(pos int) {
+		visited[pos] = true
+		for _, next := range g.data[pos] {
+			if !visited[next] {
+				dfs(next)
+			}
+		}
+		// if revisit is needed, enable following
+		//visited[pos] = false
+	}
+	dfs(pos)
+
+	completed := true
+	for _, v := range visited {
+		if !v {
+			completed = false
+			break
+		}
+	}
+	if debug > 0 {
+		var visitedP []int
+		for i, v := range visited {
+			if i != 0 && v {
+				visitedP = append(visitedP, i)
+			}
+		}
+		fmt.Printf("visited: %+v\n", visitedP)
+		fmt.Printf("completed: %+v\n", completed)
+	}
+
+	return completed, visited
 }
 
 func fillSlice(s []int, v int) {
@@ -124,6 +178,14 @@ func fillMatrix(s [][]int, v int) {
 	for p := 1; p < len(s); p++ {
 		copy(s[p], s[0])
 	}
+}
+func scanLineInt(sc *bufio.Scanner, size, offset int) []int {
+	items := make([]int, size+offset)
+	for i := 0; i < size; i++ {
+		sc.Scan()
+		items[i+offset] = atoi(sc.Text())
+	}
+	return items
 }
 
 func atoi(s string) int {
