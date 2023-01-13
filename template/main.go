@@ -220,7 +220,76 @@ func (q *queue) pop() int {
 	return v
 }
 
+func (q *queue) len() int {
+	return len(q.data)
+}
+
 func (q *queue) empty() bool {
+	return len(q.data) == 0
+}
+
+type pQueue struct {
+	data    []int
+	compare func(highP, lowP int) bool
+}
+
+func newPQueue(fn func(highP, lowP int) bool) *pQueue {
+	return &pQueue{
+		data:    []int{},
+		compare: fn,
+	}
+}
+
+func (q *pQueue) push(v int) {
+	cur := len(q.data)
+	q.data = append(q.data, v)
+	for {
+		if cur == 0 {
+			break
+		}
+		next := (cur - 1) / 2
+		if q.compare(q.data[cur], q.data[next]) {
+			q.data[cur], q.data[next] = q.data[next], q.data[cur]
+		} else {
+			break
+		}
+		cur = next
+	}
+}
+
+func (q *pQueue) pop() int {
+	val := q.data[0]
+	last := len(q.data) - 1
+	q.data[0] = q.data[last]
+	q.data = q.data[0:last]
+
+	cur := 0
+	for {
+		l, r := cur*2+1, cur*2+2
+		if r >= len(q.data) {
+			break
+		}
+		var next int
+		if q.compare(q.data[l], q.data[r]) {
+			next = l
+		} else {
+			next = r
+		}
+		if q.compare(q.data[next], q.data[cur]) {
+			q.data[cur], q.data[next] = q.data[next], q.data[cur]
+		} else {
+			break
+		}
+		cur = next
+	}
+	return val
+}
+
+func (q *pQueue) len() int {
+	return len(q.data)
+}
+
+func (q *pQueue) empty() bool {
 	return len(q.data) == 0
 }
 
